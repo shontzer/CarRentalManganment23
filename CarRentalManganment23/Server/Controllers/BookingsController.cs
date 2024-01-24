@@ -26,8 +26,8 @@ namespace CarRentalManganment23.Server.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetBookingss()
 		{
-			var Bookingss = await _unitOfWork.Bookings.GetAll();
-			return Ok(Bookingss);
+			var Bookingss = await _unitOfWork.Bookings.GetAll(includes: q => q.Include(x =>x.Vehicle).Include(x => x.Customer));
+            return Ok(Bookingss);
 		}
 
 		// GET: api/Bookingss/5

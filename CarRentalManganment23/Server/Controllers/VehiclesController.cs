@@ -26,7 +26,7 @@ namespace CarRentalManganment23.Server.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetVehicles()
 		{
-			var Vehicles = await _unitOfWork.Vehicles.GetAll();
+            var Vehicles = await _unitOfWork.Vehicles.GetAll(includes: q => q.Include(x =>x.Make).Include(x => x.Model).Include(x => x.Colour));
 			return Ok(Vehicles);
 		}
 

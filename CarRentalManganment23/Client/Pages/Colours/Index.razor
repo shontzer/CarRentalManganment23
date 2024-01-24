@@ -1,0 +1,63 @@
+﻿@page "/Colours/"
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+@using CarRentalManganment23.Shared.Domain
+
+<h3 class="card-title">Car Colours</h3>
+@if (Colours == null)
+{
+    <div class=" alert alert-info">loading Colours ...</div>
+}
+else
+{
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var make in Colours)
+            {
+                <tr>
+                    <td>@make.Name</td>
+                    <td>
+                        <a href="/Colours/view/@make.Id" class="btn btn-primary">
+                            <span class="oi oi-book"></span>
+                        </a>
+                        <a href="/Colours/edit/@make.Id" class="btn btn-primary">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="@(()=>Delete(make.Id))">
+                            <span class="btn btn-trash"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code
+{
+    private List<Make>? Colours;
+    protected async override Task OnInitializedAsync()
+    {
+        Colours = await _client.GetFromJsonAsync<List<Make>>($"{Endpoints.ColourEndpoint}");
+    }
+    async Task Delete(int makeId)
+    {
+        if (Colours != null)
+        {
+            var make = Colours.First(q => q.Id == makeId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete{make.Name}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.ColourEndpoint}/{makeId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+}
